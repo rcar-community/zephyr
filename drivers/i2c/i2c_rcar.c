@@ -77,6 +77,7 @@ struct i2c_rcar_data {
 #define RCAR_I2C_ICCCR_SCGD_400_KHZ 3
 
 #define MAX_WAIT_US 100
+#define MAX_DATA_WAIT_US 1000
 
 static inline uint32_t i2c_rcar_read(const struct device *dev, uint32_t offs)
 {
@@ -100,7 +101,8 @@ static void i2c_rcar_isr(const struct device *dev)
 	}
 }
 
-static int i2c_rcar_wait_for_state(const struct device *dev, uint8_t mask)
+static int i2c_rcar_wait_for_state(const struct device *dev, uint8_t mask,
+				   const uint32_t timeout_us)
 {
 	struct i2c_rcar_data *data = dev->data;
 
@@ -113,7 +115,7 @@ static int i2c_rcar_wait_for_state(const struct device *dev, uint8_t mask)
 	i2c_rcar_write(dev, RCAR_I2C_ICMIER, mask);
 
 	/* Wait for the interrupts */
-	return k_sem_take(&data->int_sem, K_USEC(MAX_WAIT_US));
+	return k_sem_take(&data->int_sem, K_USEC(timeout_us));
 }
 
 static int i2c_rcar_finish(const struct device *dev)
@@ -125,7 +127,7 @@ static int i2c_rcar_finish(const struct device *dev)
 	i2c_rcar_write(dev, RCAR_I2C_ICMSR, 0);
 
 	/* Wait for STOP to be transmitted */
-	ret = i2c_rcar_wait_for_state(dev, RCAR_I2C_MST);
+	ret = i2c_rcar_wait_for_state(dev, RCAR_I2C_MST, MAX_WAIT_US);
 	i2c_rcar_write(dev, RCAR_I2C_ICMSR, 0);
 
 	/* Disable STOP generation */
@@ -146,9 +148,9 @@ static int i2c_rcar_set_addr(const struct device *dev,
 
 	/* Wait for address & transfer mode to be transmitted */
 	if (read != 0) {
-		return i2c_rcar_wait_for_state(dev, RCAR_I2C_MAT | RCAR_I2C_MDR);
+		return i2c_rcar_wait_for_state(dev, RCAR_I2C_MAT | RCAR_I2C_MDR, MAX_DATA_WAIT_US);
 	} else {
-		return i2c_rcar_wait_for_state(dev, RCAR_I2C_MAT | RCAR_I2C_MDE);
+		return i2c_rcar_wait_for_state(dev, RCAR_I2C_MAT | RCAR_I2C_MDE, MAX_WAIT_US);
 	}
 }
 
@@ -173,7 +175,7 @@ static int i2c_rcar_transfer_msg(const struct device *dev, struct i2c_msg *msg)
 			i2c_rcar_write(dev, RCAR_I2C_ICMSR, reg);
 
 			/* Wait for data to be received */
-			ret = i2c_rcar_wait_for_state(dev, RCAR_I2C_MDR);
+			ret = i2c_rcar_wait_for_state(dev, RCAR_I2C_MDR, MAX_DATA_WAIT_US);
 			if (ret != 0) {
 				return ret;
 			}
@@ -193,7 +195,7 @@ static int i2c_rcar_transfer_msg(const struct device *dev, struct i2c_msg *msg)
 			i2c_rcar_write(dev, RCAR_I2C_ICMSR, reg);
 
 			/* Wait for all data to be transmitted */
-			ret = i2c_rcar_wait_for_state(dev, RCAR_I2C_MDE);
+			ret = i2c_rcar_wait_for_state(dev, RCAR_I2C_MDE, MAX_WAIT_US);
 			if (ret != 0) {
 				return ret;
 			}
