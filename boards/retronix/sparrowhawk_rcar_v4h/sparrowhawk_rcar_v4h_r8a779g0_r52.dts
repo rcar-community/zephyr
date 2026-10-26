@@ -116,3 +116,15 @@
 	pinctrl-names = "default";
 	status = "okay";
 };
+
+&i2c3 {
+	pinctrl-0 = <&i2c3_sda_default &i2c3_scl_default>;
+	pinctrl-names = "default";
+	status = "okay";
+};
+
+&i2c4 {
+	pinctrl-0 = <&i2c4_sda_default &i2c4_scl_default>;
+	pinctrl-names = "default";
+	status = "okay";
+};

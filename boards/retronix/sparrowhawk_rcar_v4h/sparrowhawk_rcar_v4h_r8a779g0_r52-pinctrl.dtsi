@@ -50,4 +50,20 @@
 	can4_rx_default: can4_rx_default {
 		pin = <PIN_CANFD4_RX FUNC_CANFD4_RX>;
 	};
+
+	i2c3_sda_default: i2c3_sda_default {
+		pin = <PIN_SDA3 FUNC_SDA3>;
+	};
+
+	i2c3_scl_default: i2c3_scl_default {
+		pin = <PIN_SCL3 FUNC_SCL3>;
+	};
+
+	i2c4_sda_default: i2c4_sda_default {
+		pin = <PIN_SDA4 FUNC_SDA4>;
+	};
+
+	i2c4_scl_default: i2c4_scl_default {
+		pin = <PIN_SCL4 FUNC_SCL4>;
+	};
 };

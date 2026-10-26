@@ -7,6 +7,7 @@
 #include <renesas/rcar/gen4/rcar_gen4_v4h_cr52.dtsi>
 #include <zephyr/dt-bindings/gpio/gpio.h>
 #include <zephyr/dt-bindings/clock/r8a779g0_cpg_mssr.h>
+#include <zephyr/dt-bindings/i2c/i2c.h>
 
 / {
 	soc {
@@ -266,6 +267,28 @@
 			can7: can7 {
 				channel = <7>;
 			};
+		};
+
+		i2c3: i2c@e66d0000 {
+			compatible = "renesas,rcar-i2c";
+			reg = <0xe66d0000 0x40>;
+			interrupts = <GIC_SPI 613 IRQ_TYPE_LEVEL IRQ_DEFAULT_PRIORITY>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+			clocks = <&cpg CPG_MOD 521>, <&cpg CPG_CORE R8A779G0_CLK_S0D6_PER>;
+			clock-frequency = <I2C_BITRATE_STANDARD>;
+			status = "disabled";
+		};
+
+		i2c4: i2c@e66d8000 {
+			compatible = "renesas,rcar-i2c";
+			reg = <0xe66d8000 0x40>;
+			interrupts = <GIC_SPI 614 IRQ_TYPE_LEVEL IRQ_DEFAULT_PRIORITY>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+			clocks = <&cpg CPG_MOD 522>, <&cpg CPG_CORE R8A779G0_CLK_S0D6_PER>;
+			clock-frequency = <I2C_BITRATE_STANDARD>;
+			status = "disabled";
 		};
 	};
 
